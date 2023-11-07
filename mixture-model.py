@@ -172,6 +172,119 @@ class UpdateAlgo:
         for i in range(0 , iter_num):
             self.wgf_update(var, eps)
     
+
+
+# Em algorithm
+
+
+class EmAlgo:
+    
+    def __init__(self, num_clu, list_points):
+        self.num_clu = num_clu
+        self.list_points = list_points
         
+        self.center_clu = [0]*self.num_clu
+        self.var = 1
+        self.proba_vec = [0]*self.num_clu
+    
+    
+    def init_para(self):
+    
+        num_points = len(self.list_points)
+        dim_space = len(self.list_points[0])
+    
+        proba_vec = [1/self.num_clu]*self.num_clu
+    
+    # to initialize the location of the clusters, we just select num_clu points at random from the dataset
+    
+        loc_cluster = []
+    
+        for i in range(0, self.num_clu):
+            int_rand = rd.randint(0, num_points-1)
+            loc_cluster = loc_cluster + [self.list_points[int_rand]]
+    
+    # lets initialize the var with the var of the first coordinate over all the points
+    
+        points_first_cor = np.transpose(self.list_points)[0]
+    
+        var_init = np.var(points_first_cor)
+        
+        self.proba_vec = proba_vec
+        self.var = var_init
+        self.center_clu = loc_cluster
+    
+    
+    def em_update(self):
+        
+        num_points = len(self.list_points)
+        dim_space = len(self.list_points[0])
+    
+        # for each point, in the data we compute the probabiltiy that it is in the cluster k
+    
+        proba_pts_cluster = []
+    
+        for i in range(0, num_points):
+            
+            proba_c = []
+        
+            for k in range(0, self.num_clu):
+            
+                proba_c = proba_c + [self.proba_vec[k]*gaussian_density(self.center_clu[k], self.var, self.list_points[i])]
+            
+            sum_c = np.sum(proba_c)
+        
+            proba_c = [i/sum_c for i in proba_c]
+    
+            proba_pts_cluster = proba_pts_cluster + [proba_c]
+    
+    # we create of vec containing the sums of proba_pts_cluster
+    
+        proba_pts_clu_sum0 = [0]*self.num_clu
+        proba_pts_clu_sum1 = []
+        proba_pts_clu_sum2 = []
+        
+        for k in range(0, self.num_clu):
+            
+            new_sum1 = [0]*dim_space
+            new_sum2 = [0]*dim_space
+            
+            for i in range(0, num_points):
+                
+                proba_pts_clu_sum0[k] = proba_pts_clu_sum0[k] + proba_pts_cluster[i][k]
+                
+                for d in range(0, dim_space):
+                    
+                    new_sum1[d] = new_sum1[d] + (proba_pts_cluster[i][k])*self.list_points[i][d]
+                    new_sum2[d] = new_sum2[d] \
+                        + (proba_pts_cluster[i][k])*((self.list_points[i][d] - self.center_clu[k][d])**2)
+            
+            new_sum1 = [new_sum1[i]/proba_pts_clu_sum0[k] for i in range(0, dim_space)]
+            new_sum2 = [new_sum2[i]/proba_pts_clu_sum0[k] for i in range(0, dim_space)]
+            
+            proba_pts_clu_sum1 = proba_pts_clu_sum1 + [new_sum1]
+            proba_pts_clu_sum2 = proba_pts_clu_sum2 + [new_sum2]
+
+        
+        proba_vec_out = [proba_pts_clu_sum0[k]/num_points for k in range(0, self.num_clu)]
+        
+        
+        var_out = np.mean(np.transpose(proba_pts_clu_sum2)[0])
+    
+    
+        self.center_clu = proba_pts_clu_sum1
+        self.var =var_out
+        self.proba_vec = proba_vec_out
+        
+        #return loc_cluster_out, var_out, proba_vec_out
+    
+
+    def em_update_iter(self, iter_nums):
+        
+        for i in range(0, iter_nums):
+            self.em_update()
+        
+        
+
+   
  
 

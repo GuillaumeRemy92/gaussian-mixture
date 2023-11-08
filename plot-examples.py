@@ -1,23 +1,30 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import random as rd
+import math
+
+import models
 
 # Generate three models
-mod1 = BaseDistribution(2, 1000)
+
+mod1 = models.BaseDistribution(2, 1000)
 mod1.circle_dis()
 mod1.add_gauss_noise(0.02)
 mod1.twod_plot(0,1)
 
-mod2 = BaseDistribution(2, 1000)
+mod2 = models.BaseDistribution(2, 1000)
 mod2.t_dis()
 mod2.add_gauss_noise(0.015)
 mod2.twod_plot(0,1)
 
-mod3 = BaseDistribution(2, 1000)
+mod3 = models.BaseDistribution(2, 1000)
 mod3.set_of_points(5)
 mod3.add_gauss_noise(0.5)
 mod3.twod_plot(0,1)
 
-mod1 = UpdateAlgo(2, 1000, mod1.list_points)
-mod2 = UpdateAlgo(2, 1000, mod2.list_points)
-mod3 = UpdateAlgo(2, 1000, mod3.list_points)
+mod1 = models.UpdateAlgo(2, 1000, mod1.list_points)
+mod2 = models.UpdateAlgo(2, 1000, mod2.list_points)
+mod3 = models.UpdateAlgo(2, 1000, mod3.list_points)
 
 # Create plots
 

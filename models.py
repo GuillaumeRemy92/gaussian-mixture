@@ -309,9 +309,28 @@ class EmAlgo:
         
         for i in range(0, iter_nums):
             self.em_update()
-        
-        
 
+     
+        
+# Function to compute log-likelihood for the base distribution corresponding to point masses in space
+
+def log_likelihood(list_points, center_clu, var, proba_vec):
+    
+    num_points = len(list_points)
+    num_clu = len(proba_vec)
+    
+    ans = 0
+    
+    for i in range(0, num_points):
+        
+        new_sum = 0
+        
+        for k in range(0, num_clu):
+            new_sum = new_sum + proba_vec[k]*gaussian_density(center_clu[k], var, list_points[i])
+            
+        ans = ans + np.log(new_sum)
+    
+    return ans
    
  
 

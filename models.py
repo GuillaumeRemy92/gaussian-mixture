@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
 import math
+import scipy
 
 # We start by defining some basic functions
 
@@ -333,4 +334,20 @@ def log_likelihood(list_points, center_clu, var, proba_vec):
     return ans
    
  
+# Function for computing the Wasserstein distance of two d-dim distributions, uses the scipy implementation,
+# computes the distance for each coordinate and sums up the answers
 
+def wasser_dist(di1, di2):
+    
+    wd = 0
+    
+    di1_t = np.transpose(di1)
+    di2_t = np.transpose(di2)
+    
+    dim = len(di1_t)
+    
+    for d in range(0, dim):
+        
+        wd = wd + scipy.stats.wasserstein_distance(di1_t[d], di2_t[d])
+    
+    return wd
